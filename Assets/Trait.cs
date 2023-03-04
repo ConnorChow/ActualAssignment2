@@ -19,13 +19,15 @@ public class Trait : MonoBehaviour {
     }
 
     public void OnButtonPress() {
-        if (flipCardsManager.flipped[index] == false) {
+        if (flipCardsManager.flipped[index] == false && GetComponent<Image>().sprite == flipCardsManager.redStar) {
             if (flipCardsManager.flipped1 == -1) {
                 flipCardsManager.flipped1 = index;
                 SetCharacter();
+                GetComponent<AudioSource>().Play();
             } else if (flipCardsManager.flipped2 == -1) {
                 flipCardsManager.flipped2 = index;
                 SetCharacter();
+                GetComponent<AudioSource>().Play();
             }
         }
     }

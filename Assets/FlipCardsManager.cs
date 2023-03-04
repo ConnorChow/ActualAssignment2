@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -18,6 +19,8 @@ public class FlipCardsManager : MonoBehaviour {
     public Sprite castro;
     public Sprite redStar;
 
+    public GameObject flagObj;
+
     GameObject[] cards = new GameObject[16];
     Trait[] traits = new Trait[16];
     public bool[] flipped = new bool[16];
@@ -31,13 +34,14 @@ public class FlipCardsManager : MonoBehaviour {
 
     int[] availableLib = new int[16] { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
     HashSet<int> available = new HashSet<int>();
-    int[] characterLib = new int[16];
 
     private static readonly System.Random r = new System.Random();
 
+    //For background playlist
+    PlaylistShuffle music;
+
     // Start is called before the first frame update
     void Start() {
-
         for (int i = 0; i < cards.Length; i++)
             available.Add(i);
 
@@ -56,6 +60,8 @@ public class FlipCardsManager : MonoBehaviour {
             available.Remove(randomIndex);
         }
         timer = delay;
+
+        music = GameObject.Find("CommieBackgroundMusic").GetComponent<PlaylistShuffle>();
     }
 
     public float delay = 2.0f;
@@ -91,9 +97,47 @@ public class FlipCardsManager : MonoBehaviour {
         if (!complete && allFinished) {
             complete = true;
             GetComponent<AudioSource>().Play();
+            music.desiredVolume = 0;
         }
-        if (complete && Input.GetKeyDown("space")){
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (complete) {
+            if (flagObj.transform.position.y < 0) {
+                flagObj.transform.Translate(0, Time.deltaTime/2, 0);
+            }
+            if (Input.GetKeyDown("space")) {
+                ResetScene();//SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
+        if (Input.GetKeyDown("escape")){
+            Application.Quit();
+        }
+    }
+
+    private void ResetScene() {
+        music.desiredVolume = 0.25f;
+        GetComponent<AudioSource>().Stop();
+        flagObj.transform.position = new Vector3(0, -12, 0);
+        complete = false;
+
+        for (int i = 0; i < cards.Length; i++)
+            available.Add(i);
+
+        int randomIndex;
+
+        for (int i = 0; i < cards.Length; i++) {
+            cards[i].GetComponent<Trait>().HideCard();
+
+            randomIndex = available.ElementAt(r.Next(available.Count));
+
+            traits[i].characterInt = availableLib[randomIndex];
+            traits[i].index = i;
+
+            flipped[i] = false;
+
+            available.Remove(randomIndex);
+        }
+        timer = delay;
+
+        flipped1 = -1;
+        flipped2 = -1;
     }
 }
