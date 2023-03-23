@@ -41,6 +41,9 @@ public class PlaylistShuffle : MonoBehaviour
     void Update(){
         if (!source.isPlaying) {
             currentSong++;
+            if (currentSong == songs.Length) {
+                currentSong= 0;
+            }
             source.clip = songs[playlistOrder[currentSong]];
             source.Play();
         }
