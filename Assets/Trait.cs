@@ -4,22 +4,23 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Trait : MonoBehaviour {
+    //index to keep track of which character is hidden under this card
     public int characterInt;
+    //index to keep track of it's element in the Manager's array
     public int index;
-
+    //reference to the scene's manager
     public FlipCardsManager flipCardsManager;
     // Start is called before the first frame update
     void Start() {
+        //get the FlipCardsManager in the scene by name
         flipCardsManager = GameObject.Find("Card-Board").GetComponent<FlipCardsManager>();
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
+    //Hooked up to each button for when is is pressed
     public void OnButtonPress() {
+        //if card isn't already flipped, then reveal it to the player
         if (flipCardsManager.flipped[index] == false && GetComponent<Image>().sprite == flipCardsManager.redStar) {
+            //try adding this to flipped cards 
             if (flipCardsManager.flipped1 == -1) {
                 flipCardsManager.flipped1 = index;
                 SetCharacter();
@@ -31,9 +32,11 @@ public class Trait : MonoBehaviour {
             }
         }
     }
+    //this changes the image of the card to the hidden character when it is flipped
     private void SetCharacter() {
         Image img = GetComponent<Image>();
         if (img != null) {
+            //switch statement decides which sprite the card is assigned based on characterInt
             switch (characterInt) {
                 case 0:
                     img.sprite = flipCardsManager.lenin;
@@ -62,6 +65,7 @@ public class Trait : MonoBehaviour {
             }
         }
     }
+    //for hiding the card when the game is over, or a match is not found
     public void HideCard() {
         Image img = GetComponent<Image>();
         img.sprite = flipCardsManager.redStar;
